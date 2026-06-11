@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Soulspace Kids</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .welcome-ambience-control {
+        position: fixed;
+        right: clamp(16px, 4vw, 28px);
+        bottom: clamp(16px, 4vw, 28px);
+        z-index: 5;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 8px 12px;
+        border: 1px solid rgba(148, 212, 165, 0.72);
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(247, 246, 215, 0.95));
+        color: #5b6d91;
+        box-shadow: 0 12px 28px rgba(29, 54, 48, 0.12);
+        cursor: pointer;
+        font: inherit;
+        font-weight: 800;
+        text-transform: lowercase;
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+
+      .welcome-ambience-control:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(29, 54, 48, 0.16);
+      }
+
+      .welcome-ambience-control:focus-visible {
+        outline: 3px solid rgba(142, 202, 220, 0.52);
+        outline-offset: 3px;
+      }
+
+      .welcome-ambience-icon {
+        width: 1.35rem;
+        display: inline-grid;
+        place-items: center;
+        font-size: 1.05rem;
+        line-height: 1;
+      }
+
+      .welcome-ambience-label {
+        display: grid;
+        gap: 1px;
+        text-align: left;
+      }
+
+      .welcome-ambience-label span {
+        line-height: 1.1;
+      }
+
+      .welcome-ambience-hint {
+        color: #66746d;
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1.1;
+        text-transform: none;
+      }
+
+      @media (max-width: 620px) {
+        .welcome-ambience-control {
+          right: 14px;
+          bottom: 14px;
+          max-width: calc(100vw - 28px);
+        }
+      }
+    </style>
+  </head>
+  <body class="access-locked">
+    <section class="access-screen" id="accessScreen" aria-labelledby="accessTitle">
+      <div class="access-panel">
+        <div class="access-brand">
+          <span class="access-logo">
+            <img src="assets/soulspace-kids-logo.png" alt="Logo Soulspace Kids" />
+          </span>
+          <div>
+            <p class="eyebrow">EMOTIONAL REGULATION PLATFORM</p>
+            <h1 id="accessTitle">Welcome to Soulspace Kids</h1>
+            <p>calm hearts, bright minds, closer to Allah</p>
+          </div>
+        </div>
+
+        <div class="access-options">
+          <button class="access-choice student-choice" id="studentAccess" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z" />
+            </svg>
+            <span>
+              <strong>student calm session</strong>
+              <small>ruang selamat untuk menenangkan emosi</small>
+            </span>
+          </button>
+
+          <form class="teacher-access" id="teacherAccessForm" autocomplete="off">
+            <button class="access-choice teacher-choice" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 4h16v16H4zM8 16V9M12 16v-4M16 16V7" />
+              </svg>
+              <span>
+                <strong>teacher / counselor access</strong>
+                <small>untuk rekod emosi dan laporan perkembangan</small>
+              </span>
+            </button>
+            <label class="pin-field">
+              <span>enter pin</span>
+              <input id="teacherPin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="_ _ _ _" aria-describedby="pinError" />
+            </label>
+            <p class="pin-error" id="pinError" role="alert"></p>
+          </form>
+        </div>
+      </div>
+
+      <audio id="welcomeAmbience" preload="auto" loop>
+        <source src="assets/calm-ambience.mp3" type="audio/mpeg" />
+        <source src="assets/calm-ambience.wav" type="audio/wav" />
+      </audio>
+      <button class="welcome-ambience-control" id="welcomeAmbienceToggle" type="button" aria-pressed="false">
+        <span class="welcome-ambience-icon" id="welcomeAmbienceIcon" aria-hidden="true">🔈</span>
+        <span class="welcome-ambience-label">
+          <span>calm ambience</span>
+          <small class="welcome-ambience-hint" id="welcomeAmbienceHint">tap to start calm ambience</small>
+        </span>
+      </button>
+    </section>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">
+            <img src="assets/soulspace-kids-logo.png" alt="Logo Soulspace Kids" />
+          </span>
+          <div>
+            <h1>Soulspace Kids</h1>
+            <p>Calm Hearts, Bright Minds, Closer to Allah</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <span class="privacy-chip access-mode-chip" id="accessModeChip">Student session</span>
+          <span class="privacy-chip">Data disimpan pada peranti ini</span>
+          <button class="icon-button" id="printReportTop" type="button" aria-label="Cetak laporan" data-role="teacher">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z" />
+            </svg>
+          </button>
+          <button class="icon-button" id="lockAccess" type="button" aria-label="Kunci akses">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5z" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <nav class="side-nav" aria-label="Modul aplikasi">
+          <button class="nav-item active" type="button" data-tab="observe" data-role="teacher">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M1.5 12s4-7 10.5-7 10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <span>Emotion Check-In</span>
+          </button>
+          <button class="nav-item" type="button" data-tab="intervention">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z" />
+            </svg>
+            <span>Comfort Support</span>
+          </button>
+          <button class="nav-item" type="button" data-tab="art">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" />
+              <circle cx="12" cy="12" r="8" />
+            </svg>
+            <span>Creative Calm</span>
+          </button>
+          <button class="nav-item" type="button" data-tab="sound">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 10v4h4l5 4V6l-5 4H4Z" />
+              <path d="M17 9a5 5 0 0 1 0 6M20 7a9 9 0 0 1 0 10" />
+            </svg>
+            <span>Calm Recitation</span>
+          </button>
+          <button class="nav-item" type="button" data-tab="report" data-role="teacher">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 4h16v16H4zM8 16V9M12 16v-4M16 16V7" />
+            </svg>
+            <span>Progress Journey</span>
+          </button>
+        </nav>
+
+        <main class="workspace">
+          <section class="module active" id="observe" aria-labelledby="observe-title">
+            <div class="module-head">
+              <div>
+                <p class="eyebrow">Emotion Check-In</p>
+                <h2 id="observe-title">Sahkan emosi murid</h2>
+              </div>
+              <div class="mode-toggle" role="group" aria-label="Pilihan nilai">
+                <button class="segmented active" type="button" data-mode="islam">Islam</button>
+                <button class="segmented" type="button" data-mode="moral">Moral</button>
+              </div>
+            </div>
+
+            <div class="observe-grid">
+              <section class="surface camera-surface" aria-label="Kamera pemerhatian">
+                <div class="camera-frame">
+                  <video id="cameraPreview" autoplay playsinline muted></video>
+                  <div class="camera-empty" id="cameraEmpty">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 7h4l2-3h4l2 3h4v13H4z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                    <span>Kamera belum aktif</span>
+                  </div>
+                  <div class="camera-badge" id="emotionBadge">Belum disahkan</div>
+                </div>
+                <div class="button-row">
+                  <button class="primary-button" id="startCamera" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M15 10 20 7v10l-5-3v4H3V6h12z" />
+                    </svg>
+                    Kamera
+                  </button>
+                  <button class="ghost-button" id="stopCamera" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M6 6h12v12H6z" />
+                    </svg>
+                    Henti
+                  </button>
+                </div>
+                <p class="fine-print">Pengesahan manusia diperlukan. Tiada pengecaman identiti atau rakaman dibuat.</p>
+              </section>
+
+              <section class="surface student-surface" aria-label="Maklumat sesi">
+                <div class="field-grid">
+                  <label>
+                    <span>Nama murid</span>
+                    <input id="studentName" type="text" autocomplete="off" placeholder="Contoh: Aisyah" />
+                  </label>
+                  <label>
+                    <span>Kelas / kumpulan</span>
+                    <input id="studentClass" type="text" autocomplete="off" placeholder="Contoh: PPKI 2" />
+                  </label>
+                </div>
+                <label class="consent-line">
+                  <input id="consentCheck" type="checkbox" />
+                  <span>Persetujuan penggunaan kamera/rekod telah disahkan.</span>
+                </label>
+
+                <div class="ai-panel">
+                  <div>
+                    <p class="eyebrow">AI reaksi wajah</p>
+                    <strong>Model Teachable Machine</strong>
+                  </div>
+                  <label>
+                    <span>URL model</span>
+                    <input id="aiModelUrl" type="url" value="https://teachablemachine.withgoogle.com/models/4jBk5tQuGT/" placeholder="https://teachablemachine.withgoogle.com/models/..." />
+                  </label>
+                  <div class="button-row">
+                    <button class="ghost-button" id="loadAiModel" type="button">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16" />
+                      </svg>
+                      Muat model
+                    </button>
+                    <button class="primary-button" id="startAi" type="button">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      Mula AI
+                    </button>
+                    <button class="ghost-button" id="stopAi" type="button">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 6h12v12H6z" />
+                      </svg>
+                      Henti AI
+                    </button>
+                  </div>
+                  <div class="ai-status" id="aiStatus">Model belum dimuatkan.</div>
+                  <div class="ai-predictions" id="aiPredictions"></div>
+                </div>
+
+                <div class="emotion-grid" id="emotionGrid" aria-label="Pilihan emosi"></div>
+
+                <label class="note-field">
+                  <span>Catatan guru</span>
+                  <textarea id="teacherNote" rows="4" placeholder="Pemerhatian ringkas untuk rujukan guru atau kaunselor"></textarea>
+                </label>
+              </section>
+            </div>
+
+            <section class="surface recommendation-surface" aria-live="polite">
+              <div>
+                <p class="eyebrow">Cadangan segera</p>
+                <h3 id="recommendTitle">Pilih emosi untuk memulakan sesi</h3>
+                <p id="recommendText">Aktiviti mikro akan disesuaikan mengikut emosi yang disahkan.</p>
+              </div>
+              <div class="button-row">
+                <button class="primary-button" id="startRecommended" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  Mulakan
+                </button>
+                <button class="success-button" id="saveSession" type="button" data-role="teacher">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" />
+                    <path d="M7 21v-8h10v8M7 3v5h8" />
+                  </svg>
+                  Rekod
+                </button>
+              </div>
+            </section>
+          </section>
+
+          <section class="module" id="intervention" aria-labelledby="intervention-title">
+            <div class="module-head">
+              <div>
+                <p class="eyebrow">Comfort Support</p>
+                <h2 id="intervention-title">Emotional Comfort Activities</h2>
+              </div>
+              <div class="button-row">
+                <div class="mode-toggle" role="group" aria-label="Pilihan nilai intervensi">
+                  <button class="segmented active" type="button" data-mode="islam">Islam</button>
+                  <button class="segmented" type="button" data-mode="moral">Moral</button>
+                </div>
+                <button class="success-button" id="completeIntervention" type="button" data-role="teacher">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m20 6-11 11-5-5" />
+                  </svg>
+                  Selesai sesi
+                </button>
+              </div>
+            </div>
+
+            <div class="intervention-layout">
+              <section class="surface focus-card">
+                <p class="eyebrow" id="focusEmotion">Emosi dipilih</p>
+                <h3 id="focusTitle">Belum dipilih</h3>
+                <p id="focusPrompt">Pilih emosi pada modul Emotion Check-In.</p>
+                <ol class="step-list" id="focusSteps"></ol>
+              </section>
+              <section class="intervention-cards" id="interventionCards" aria-label="Senarai aktiviti"></section>
+            </div>
+          </section>
+
+          <section class="module" id="art" aria-labelledby="art-title">
+            <div class="module-head">
+              <div>
+                <p class="eyebrow">Creative Calm</p>
+                <h2 id="art-title">Digital Mandala Therapy</h2>
+                <p class="module-subtitle">express emotions through calming colors</p>
+              </div>
+              <div class="button-row">
+                <button class="ghost-button" id="patternButton" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 4h16v16H4zM4 12h16M12 4v16" />
+                  </svg>
+                  Warna ceria
+                </button>
+                <button class="ghost-button" id="clearMandala" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                  </svg>
+                  Kosongkan
+                </button>
+                <button class="primary-button" id="downloadMandala" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16" />
+                  </svg>
+                  Simpan SVG
+                </button>
+              </div>
+            </div>
+
+            <div class="art-layout">
+              <section class="surface palette-panel">
+                <h3>Choose Your Pattern</h3>
+                <div class="coloring-library" id="coloringLibrary" aria-label="Pilihan bahan mewarna"></div>
+                <h3>Difficulty Level</h3>
+                <div class="detail-mode" id="detailMode" aria-label="Tahap perincian bahan mewarna">
+                  <button class="detail-button active" type="button" data-detail="simple">Simple Mode</button>
+                  <button class="detail-button" type="button" data-detail="medium">Medium Mode</button>
+                  <button class="detail-button" type="button" data-detail="detailed">Detailed Mode</button>
+                </div>
+                <h3>Color Palette</h3>
+                <div class="palette" id="palette"></div>
+                <label class="slider-label">
+                  <span>Ketebalan garisan</span>
+                  <input id="strokeSlider" type="range" min="1" max="5" value="2" />
+                </label>
+              </section>
+              <section class="surface mandala-panel">
+                <div class="mandala-stage">
+                  <div class="islamic-watermark" aria-hidden="true"></div>
+                  <span class="particle particle-one" aria-hidden="true"></span>
+                  <span class="particle particle-two" aria-hidden="true"></span>
+                  <span class="particle particle-three" aria-hidden="true"></span>
+                  <svg id="mandalaCanvas" viewBox="0 0 520 520" role="img" aria-label="Mandala geometri boleh diwarna"></svg>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="module" id="sound" aria-labelledby="sound-title">
+            <div class="module-head">
+              <div>
+                <p class="eyebrow">Calm Recitation</p>
+                <h2 id="sound-title">Pernafasan berpandu</h2>
+              </div>
+              <div class="button-row">
+                <button class="primary-button" id="startBreath" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  Mula
+                </button>
+                <button class="ghost-button" id="stopBreath" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6h12v12H6z" />
+                  </svg>
+                  Henti
+                </button>
+              </div>
+            </div>
+
+            <div class="sound-layout">
+              <section class="surface breath-panel">
+                <div class="breath-orb" id="breathOrb">
+                  <span id="breathPhase">Sedia</span>
+                  <strong id="breathCount">0</strong>
+                </div>
+                <div class="zikr-line" id="zikrLine">Subhanallah</div>
+                <div class="meter" aria-hidden="true"><span id="breathMeter"></span></div>
+              </section>
+              <section class="surface sound-controls">
+                <h3>Tetapan sesi</h3>
+                <label class="slider-label">
+                  <span>Tempoh minit</span>
+                  <input id="durationSlider" type="range" min="1" max="8" value="3" />
+                  <output id="durationOut">3</output>
+                </label>
+                <div class="audio-library" aria-label="Pilihan audio tenang">
+                  <button class="track-card" type="button" data-track="zikr">
+                    <strong>Calm Recitation</strong>
+                    <span>pilih audio terapi kegemaran anda</span>
+                  </button>
+                  <button class="track-card" type="button" data-track="lullaby">
+                    <strong>Peaceful Melodies</strong>
+                    <span>bunyi lembut untuk fokus dan relaks</span>
+                  </button>
+                </div>
+                <div class="human-audio-panel">
+                  <h3>Soothing Sounds</h3>
+                  <label>
+                    <span>muat naik audio terapi atau zikir</span>
+                    <input id="humanAudioFile" type="file" accept="audio/*" />
+                  </label>
+                  <audio id="humanAudioPlayer" controls preload="metadata"></audio>
+                  <label>
+                    <span>Calming Audio Link</span>
+                    <input id="youtubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." />
+                  </label>
+                  <div class="button-row">
+                    <button class="ghost-button" id="loadYoutube" type="button">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M10 15 15 12 10 9z" />
+                        <path d="M3 12c0-4 0-6 9-6s9 2 9 6 0 6-9 6-9-2-9-6Z" />
+                      </svg>
+                      Play Audio
+                    </button>
+                    <button class="ghost-button" id="clearHumanAudio" type="button">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 6h12v12H6z" />
+                      </svg>
+                      Clear Session
+                    </button>
+                  </div>
+                  <div class="youtube-embed" id="youtubeEmbed"></div>
+                </div>
+                <button class="ghost-button" id="stopCalmAudio" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6h12v12H6z" />
+                  </svg>
+                  Quiet Mode
+                </button>
+              </section>
+            </div>
+          </section>
+
+          <section class="module" id="report" aria-labelledby="report-title">
+            <div class="module-head">
+              <div>
+                <p class="eyebrow">Progress Journey</p>
+                <h2 id="report-title">Jejak emosi dan kemajuan</h2>
+              </div>
+              <div class="button-row">
+                <button class="ghost-button" id="exportCsv" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16" />
+                  </svg>
+                  CSV
+                </button>
+                <button class="ghost-button" id="printReport" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z" />
+                  </svg>
+                  Cetak
+                </button>
+                <button class="danger-button" id="clearRecords" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                  </svg>
+                  Padam
+                </button>
+              </div>
+            </div>
+
+            <div class="report-grid">
+              <section class="surface stat-strip" aria-label="Ringkasan laporan">
+                <div>
+                  <span>Jumlah sesi</span>
+                  <strong id="totalSessions">0</strong>
+                </div>
+                <div>
+                  <span>Emosi utama</span>
+                  <strong id="mainEmotion">-</strong>
+                </div>
+                <div>
+                  <span>Sesi seni</span>
+                  <strong id="artSessions">0</strong>
+                </div>
+              </section>
+              <section class="surface chart-panel">
+                <h3>Taburan emosi</h3>
+                <div id="emotionChart" class="emotion-chart"></div>
+              </section>
+              <section class="surface table-panel">
+                <h3>Rekod terkini</h3>
+                <div class="table-scroll">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Tarikh</th>
+                        <th>Murid</th>
+                        <th>Emosi</th>
+                        <th>Aktiviti</th>
+                        <th>Catatan</th>
+                      </tr>
+                    </thead>
+                    <tbody id="reportRows"></tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+      (() => {
+        const accessScreen = document.getElementById("accessScreen");
+        const audio = document.getElementById("welcomeAmbience");
+        const toggle = document.getElementById("welcomeAmbienceToggle");
+        const icon = document.getElementById("welcomeAmbienceIcon");
+        const hint = document.getElementById("welcomeAmbienceHint");
+        const mutedKey = "soulspace-kids-welcome-ambience-muted";
+        const targetVolume = 0.18;
+        const fadeInMs = 2800;
+        const fadeOutMs = 900;
+        let fadeFrame = null;
+        let isMuted = localStorage.getItem(mutedKey) === "true";
+
+        audio.volume = 0;
+
+        const isWelcomeVisible = () => document.body.classList.contains("access-locked");
+
+        function stopFade() {
+          if (fadeFrame) {
+            window.cancelAnimationFrame(fadeFrame);
+            fadeFrame = null;
+          }
+        }
+
+        function updateControl(status = "") {
+          const isPlaying = !audio.paused && !isMuted;
+          icon.textContent = isMuted ? "🔇" : "🔈";
+          toggle.setAttribute("aria-pressed", String(isPlaying));
+          toggle.setAttribute("aria-label", isPlaying ? "mute calm ambience" : "start calm ambience");
+
+          if (status) {
+            hint.textContent = status;
+            return;
+          }
+
+          if (isMuted) {
+            hint.textContent = "muted";
+          } else if (isPlaying) {
+            hint.textContent = "soft ambience on";
+          } else {
+            hint.textContent = "tap to start calm ambience";
+          }
+        }
+
+        function fadeTo(volume, duration, onDone) {
+          stopFade();
+          const startVolume = audio.volume;
+          const startedAt = performance.now();
+
+          function step(now) {
+            const progress = Math.min((now - startedAt) / duration, 1);
+            audio.volume = startVolume + (volume - startVolume) * progress;
+
+            if (progress < 1) {
+              fadeFrame = window.requestAnimationFrame(step);
+              return;
+            }
+
+            fadeFrame = null;
+            onDone?.();
+          }
+
+          fadeFrame = window.requestAnimationFrame(step);
+        }
+
+        async function startAmbience() {
+          if (isMuted || !isWelcomeVisible()) return;
+
+          try {
+            audio.volume = 0;
+            await audio.play();
+            fadeTo(targetVolume, fadeInMs);
+            updateControl();
+          } catch (error) {
+            updateControl("tap to start calm ambience");
+          }
+        }
+
+        function stopAmbience(reset = false) {
+          if (audio.paused) {
+            updateControl();
+            return;
+          }
+
+          fadeTo(0, fadeOutMs, () => {
+            audio.pause();
+            if (reset) audio.currentTime = 0;
+            updateControl();
+          });
+        }
+
+        accessScreen.addEventListener("click", () => {
+          if (!isWelcomeVisible() || isMuted || !audio.paused) return;
+          startAmbience();
+        });
+
+        toggle.addEventListener("click", (event) => {
+          event.stopPropagation();
+
+          if (!audio.paused && !isMuted) {
+            isMuted = true;
+            localStorage.setItem(mutedKey, "true");
+            stopAmbience();
+            updateControl();
+            return;
+          }
+
+          isMuted = false;
+          localStorage.setItem(mutedKey, "false");
+          startAmbience();
+        });
+
+        audio.addEventListener("error", () => {
+          updateControl("tap to start calm ambience");
+        });
+
+        new MutationObserver(() => {
+          if (!isWelcomeVisible()) {
+            stopAmbience(true);
+            return;
+          }
+          updateControl();
+        }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
+        updateControl();
+      })();
+    </script>
+  </body>
+</html>
